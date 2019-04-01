@@ -16,7 +16,11 @@ def affiche(rate, data):
     print("{0} ms\n".format(len(data)*1000/rate))
     plt.subplot(311)
     plt.plot(data)
-    modif_signal(rate, data, 8*rate/1000, 32*rate/1000)
+    signal_modif = modif_signal(rate, data, 8*rate/1000, 32*rate/1000)
+    write("resultat.wav", rate, np.int16(signal_modif))
+    plt.subplot(312)
+    plt.plot(signal_modif)
+
     plt.show()
 
 def fenetrageHamming(size):
@@ -35,10 +39,17 @@ def fenetrage(signal, hamming):
     return fen
 
 def modif_signal(rate, signal, m, N):
-    signal_modif = []
+    signal_modif = np.zeros(len(signal))
+    somme_hamming = np.zeros(len(signal))
+    
+    hamming = fenetrageHamming(N)
     for i in range(0, len(signal) - N, m):
-        hamming = fenetrageHamming(N/rate*1000)
-        fenetre = fenetrage(signal[i:i+N], hamming)
+        fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
+        signal_modif[i:i+N] += fenetre
+        somme_hamming[i:i+N] += hamming
+    
+    signal_modif /= somme_hamming
+    return signal_modif
         
     
 if __name__ == "__main__":
