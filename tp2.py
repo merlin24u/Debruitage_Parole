@@ -16,7 +16,7 @@ def affiche(rate, data):
     print("{0} ms\n".format(len(data)*1000/rate))
     plt.subplot(311)
     plt.plot(data)
-    modif_signal(data, 8*rate/1000, 32*rate/1000)
+    modif_signal(rate, data, 8*rate/1000, 32*rate/1000)
     plt.show()
 
 def fenetrageHamming(size):
@@ -24,9 +24,6 @@ def fenetrageHamming(size):
     for n in range(0, size):
         angle = 2 * pi * n/size
         hamming.append(0.54 - 0.46 * cos(angle))
-    
-    plt.subplot(312)
-    plt.plot(hamming)
 
     return hamming
 
@@ -35,12 +32,9 @@ def fenetrage(signal, hamming):
     for i in range(0, len(hamming)):
         fen.append(signal[i]*hamming[i])
 
-    plt.subplot(313)
-    plt.plot(fen)
-
     return fen
 
-def modif_signal(signal, m, N):
+def modif_signal(rate, signal, m, N):
     signal_modif = []
     for i in range(0, len(signal) - N, m):
         hamming = fenetrageHamming(N/rate*1000)
