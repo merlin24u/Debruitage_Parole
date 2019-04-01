@@ -39,6 +39,14 @@ def fenetrage(signal, hamming):
 
     return fen
 
+def spectre_amplitude(spectre, fftsize):
+    res = np.abs(spectre)
+    plt.subplot(313)
+    plt.plot(20*log10(res))
+
+    return res
+    
+
 def modif_signal(rate, signal, m, N):
     signal_modif = np.zeros(len(signal))
     somme_hamming = np.zeros(len(signal))
@@ -47,6 +55,7 @@ def modif_signal(rate, signal, m, N):
     for i in range(0, len(signal) - N, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
         spectre = FFT.fft(fenetre, N)
+        amplitude = spectre_amplitude(spectre, N)
         fenetre = np.real(FFT.ifft(spectre,N))
         signal_modif[i:i+N] += fenetre
         somme_hamming[i:i+N] += hamming
