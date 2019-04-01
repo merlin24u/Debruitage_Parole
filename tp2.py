@@ -5,6 +5,7 @@ from math import cos
 from math import pi
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.fft as FFT
 
 def main(arg):
     rate, data = read(arg)
@@ -45,6 +46,8 @@ def modif_signal(rate, signal, m, N):
     hamming = fenetrageHamming(N)
     for i in range(0, len(signal) - N, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
+        spectre = FFT.fft(fenetre, N)
+        fenetre = np.real(FFT.ifft(spectre,N))
         signal_modif[i:i+N] += fenetre
         somme_hamming[i:i+N] += hamming
     
