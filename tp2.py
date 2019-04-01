@@ -41,8 +41,10 @@ def fenetrage(signal, hamming):
 
 def spectre_amplitude(spectre, fftsize):
     res = np.abs(spectre)
+    affichage = [20*log10(x) for x in res]
+    res = [20*x for x in res]
     plt.subplot(313)
-    plt.plot(20*log10(res))
+    plt.plot(affichage)
 
     return res
     
