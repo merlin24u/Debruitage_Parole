@@ -42,7 +42,9 @@ def fenetrage(signal, hamming):
 
 def modif_signal(signal, m, N):
     signal_modif = []
-    # for i in range(0, len(signal) - N, m):
+    for i in range(0, len(signal) - N, m):
+        hamming = fenetrageHamming(N/rate*1000)
+        fenetre = fenetrage(signal[i:i+N], hamming)
         
     
 if __name__ == "__main__":
