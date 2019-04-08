@@ -41,27 +41,31 @@ def fenetrage(signal, hamming):
 
 def spectre_amplitude(spectre, fftsize):
     res = np.abs(spectre)
-    affichage = [20*log10(x) for x in res]
+    spec_affichage = res
     res = [20*x for x in res]
-    plt.subplot(313)
-    plt.plot(affichage)
+    spec_affichage = [20*log10(x) for x in spec_affichage]
 
-    return res
+    return res, spec_affichage
     
-
 def modif_signal(rate, signal, m, N):
     signal_modif = np.zeros(len(signal))
     somme_hamming = np.zeros(len(signal))
-    
+    tab_spectres = [] # pour le stockage des spectres d'amplitude
     hamming = fenetrageHamming(N)
+    fftsize = 1024
+    
     for i in range(0, len(signal) - N, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
-        spectre = FFT.fft(fenetre, N)
-        amplitude = spectre_amplitude(spectre, N)
-        fenetre = np.real(FFT.ifft(spectre,N))
-        signal_modif[i:i+N] += fenetre
+        spectre = FFT.fft(fenetre, fftsize)
+        amplitude, ampli_aff = spectre_amplitude(spectre, fftsize)
+        tab_spectres.append(ampli_aff)
+        fenetre = np.real(FFT.ifft(spectre, fftsize))
+        signal_modif[i:i+N] += fenetre[0:N]
         somme_hamming[i:i+N] += hamming
-    
+
+    np.transpose(tab_spectres)
+    plt.subplot(313)
+    plt.imshow(tab_spectres, aspect='auto') # afficher uniquement 0 a fftsize/2
     signal_modif /= somme_hamming
     return signal_modif
         
