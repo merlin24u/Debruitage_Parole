@@ -40,7 +40,6 @@ def fenetrage(signal, hamming):
 def spectre_amplitude(spectre):
     res = np.abs(spectre)
     spec_affichage = res
-    res = [20*x for x in res]
     spec_affichage = [20*math.log10(x) for x in spec_affichage]
 
     return res, spec_affichage
@@ -56,12 +55,13 @@ def soustraction_spectrale(spectre_amplitude, bruit):
     beta = 1
     gamma = 0
     res = np.zeros(len(spectre_amplitude))
+    y = beta * math.pow(bruit, alpha)
     for i in range(0, len(spectre_amplitude)):
-        tmp = math.pow(math.pow(spectre_amplitude[i], alpha) - beta * math.pow(bruit, alpha), 1/alpha)
-        if tmp > 0:
-            res[i] = tmp
+        x = math.pow(spectre_amplitude[i], alpha)
+        if (x - y) > 0:
+            res[i] = math.pow(x - y, 1.0/alpha)
         else:
-            res[i] = gamma * bruit[i]
+            res[i] = gamma * bruit
 
     return res
         
@@ -71,6 +71,16 @@ def modif_signal(rate, signal, m, N):
     tab_spectres = [] # pour le stockage des spectres d'amplitude
     hamming = fenetrage_hamming(N)
     fftsize = 1024
+
+    # estimation du bruit
+    bruit = 0
+    size = 5
+    for i in range(0, size*m, m):
+        fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
+        spectre = FFT.fft(fenetre, fftsize)
+        amplitude, ampli_aff = spectre_amplitude(spectre)
+        bruit += np.mean(amplitude)
+    bruit /= size
     
     for i in range(0, len(signal) - N, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
@@ -79,10 +89,6 @@ def modif_signal(rate, signal, m, N):
         tab_spectres.append(ampli_aff)
         phase = spectre_phase(spectre)
         # modification spectre d'amplitude
-        bruit = 0
-        for j in range(0, 5):
-            bruit += amplitude[j]
-        bruit /= 5
         amplitude = soustraction_spectrale(amplitude, bruit)
         # reconstruction du signal
         spectre = spectre_reconstruction(amplitude, phase)
