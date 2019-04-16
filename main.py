@@ -52,8 +52,8 @@ def spectre_reconstruction(spectre_amplitude, spectre_phase):
 
 def soustraction_spectrale(spectre_amplitude, bruit):
     alpha = 2
-    beta = 1
-    gamma = 0
+    beta = 8
+    gamma = 0.2
     res = np.zeros(len(spectre_amplitude))
     y = beta * math.pow(bruit, alpha)
     for i in range(0, len(spectre_amplitude)):
@@ -75,7 +75,7 @@ def modif_signal(rate, signal, m, N):
     # estimation du bruit
     bruit = 0
     size = 5
-    for i in range(0, size*m, m):
+    for i in range(0, (size - 1)*m, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
         spectre = FFT.fft(fenetre, fftsize)
         amplitude, ampli_aff = spectre_amplitude(spectre)
