@@ -37,12 +37,12 @@ def fenetrage(signal, hamming):
 
     return fen
 
-def spectre_amplitude(spectre):
+def spectre_amplitude(spectre, fftsize):
     res = np.abs(spectre)
     spec_affichage = res
     spec_affichage = [20*math.log10(x) for x in spec_affichage]
 
-    return res, spec_affichage
+    return res, spec_affichage[0:fftsize/2]
 
 def spectre_phase(spectre):
     return np.angle(spectre)
@@ -78,14 +78,14 @@ def modif_signal(rate, signal, m, N):
     for i in range(0, (size - 1)*m, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
         spectre = FFT.fft(fenetre, fftsize)
-        amplitude, ampli_aff = spectre_amplitude(spectre)
+        amplitude, ampli_aff = spectre_amplitude(spectre, fftsize)
         bruit += np.mean(amplitude)
     bruit /= size
     
     for i in range(0, len(signal) - N, m):
         fenetre = np.array(fenetrage(signal[i:i+N], hamming), dtype=np.float)
         spectre = FFT.fft(fenetre, fftsize)
-        amplitude, ampli_aff = spectre_amplitude(spectre)
+        amplitude, ampli_aff = spectre_amplitude(spectre, fftsize)
         tab_spectres.append(ampli_aff)
         phase = spectre_phase(spectre)
         # modification spectre d'amplitude
