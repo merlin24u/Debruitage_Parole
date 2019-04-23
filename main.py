@@ -98,7 +98,7 @@ def modif_signal(rate, signal, m, N):
 
     np.transpose(tab_spectres)
     plt.subplot(313)
-    plt.imshow(tab_spectres, aspect='auto') # afficher uniquement de 0 a fftsize/2
+    plt.imshow(tab_spectres, aspect='auto') # affichage spectrogramme
     signal_modif /= somme_hamming
     return signal_modif
         
